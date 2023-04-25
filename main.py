@@ -14,18 +14,21 @@ cursorr = connection.cursor()
 cursorr.execute("SELECT account_number, pin FROM bank_account")
 ids = cursorr.fetchall() 
 i=0
-number = input("What is the account number? \n")
-pin = input("what is the pin? \n")
+while i == 0 :
+    number = int(input("What is the account number? \n"))
+    pin = int(input("what is the pin? \n"))
 
-x = tuple([number, pin])
+    x = tuple([number, pin])
 
-for acc in ids:
-    print(acc)
-    if str(x) == str(acc):
-        print("Your account is this "+str(acc))
-        print(x)
-            
-
+    for acc in ids:
+        if str(x) == str(acc):
+            print("Your account is this "+str(acc))
+            vali = input("Y/n? ")
+            if vali == 'Y':
+                i += 2
+            else:
+                i == 0
+                
 cursorr.close()
 
 connection.close()
