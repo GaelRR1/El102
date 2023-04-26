@@ -46,12 +46,17 @@ while i == 0 :
             vali = input("Y/n? ")
             if vali == 'Y':
                 i += 2
+                nm = connection.cursor()
+                nm.execute("SELECT * From bank_account")
+                name = nm.fetchone()[0]
+                account = nm.fetchall()
             else:
                 i == 0
 
 m = 0            
 while m == 0:
-    print("Hello")
+    print(f"Hello {name} welcome to GR Corporated. \n First here is your account {account}")
+    next = input("So, what do you want to do next deposit, whithdraw, transfer, or show available accounts? \n")
 cursorr.close()
 
 connection.close()
