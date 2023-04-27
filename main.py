@@ -65,6 +65,17 @@ def deposit(amount,number):
     print("Your after balance is: "+str(b_balance)+" .")
     connection.commit()
    
+def transfer(amount,tnumber,Rnumber):
+   #combine a deposit and whitdrwa function
+   #take money
+   print("\nStart to take money from "+str(tnumber)+"\n")
+   withdraw(amount,tnumber)
+   
+   print("\nStart the deposit on "+str(Rnumber)+"\n")
+   deposit(amount,Rnumber )
+  
+
+
 def show(own):
    sh = connection.cursor()
    sh.execute("Select * FROM bank_account WHERE owner_name != %s", (own,))
@@ -89,9 +100,17 @@ while i == 0 :
             if vali == 'Y':
                 i += 2
                 nm = connection.cursor()
-                nm.execute("SELECT * From bank_account")
+                nm.execute("SELECT * From bank_account WHERE account_number = %s", (number,))
+
+                none = connection.cursor()
+                none.execute("SELECT account_number From bank_account WHERE account_number = %s", (number,))
+
                 name = nm.fetchone()[0]
                 account = nm.fetchall()
+                ac_number = none.fetchall()
+
+                none.close()
+                nm.close()
             else:
                 i == 0
 
@@ -101,13 +120,24 @@ while m == 0:
     next = input("So, what do you want to do next deposit, whithdraw, transfer, or show available accounts? \n \n \n")
 
     if revis(scenario_deposit,next):
-       deposit()
+       ff = input("\nHow much you want to deposit? ")
+       deposit(ff,ac_number)
     elif revis(scenario_withdraw,next):
-       withdraw()
+       dd = input("\nHow much you want to take out? ")
+       withdraw(dd,ac_number)
     elif revis(scenario_show,next):
        show(name)
     elif revis(scenario_transfer,next):
-       transfer()
+       both = int(input("What will be the amount to transfer? \n"))
+       ck = 0
+       while ck == 0:
+        inp = input("Who will recieve the money? ")
+        idd = connection.cursor()
+        idd.execute("SELECT acccount_number FROM bank_account")
+        for a in idd:
+           if inp == a:
+              ck = 1
+       transfer(both,ac_number,inp)
        
 cursorr.close()
 
