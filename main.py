@@ -1,8 +1,10 @@
 import mysql.connector
 from tkinter import *
 from tkinter import ttk
+import datetime
 
- 
+date = datetime.datetime.now()
+
 
 connection = mysql.connector.connect(
     user = "root", 
@@ -23,21 +25,21 @@ def revis(sc,answer):
 
 def withdraw(amount,number):    
 
-    curso = connection.cursor()    
+    cursoo = connection.cursor()    
     
     amount = int(amount)
     number = int(number)
-    curso.execute("SELECT balance FROM bank_account WHERE account_number = %s", (number,))   
+    cursoo.execute("SELECT balance FROM bank_account WHERE account_number = %s", (number,))   
 
     b_balance = curso.fetchall()        
 
     print("Your before balance is: "+ str(b_balance)+" .")      
   
     
-    curso.execute("UPDATE bank_account SET balance = balance - %s  WHERE account_number = %s", (amount,number))
+    cursoo.execute("UPDATE bank_account SET balance = balance - %s  WHERE account_number = %s", (amount,number))
 
     
-    curso.execute("SELECT balance FROM bank_account WHERE account_number = %s", (number,))
+    cursoo.execute("SELECT balance FROM bank_account WHERE account_number = %s", (number,))
     b_balance = curso.fetchone()[0] 
 
     print("Your after balance is: "+str(b_balance)+" .")
@@ -51,7 +53,7 @@ def deposit(amount,number):
     number = int(number)
     curso.execute("SELECT balance FROM bank_account WHERE account_number = %s", (number,))   
 
-    b_balance = curso.fetchall()        
+    b_balance = curso.fetchone()[0]        
 
     print("Your before balance is: "+ str(b_balance)+" .")      
   
@@ -87,36 +89,55 @@ def show(own):
         for a in sh:
             print(a[0])
 
+def create():
+   name = input("What is your name? \n")
+   pin = input("what will be your pin? \n")
+   balance = input("What is the balance for your account?\n ")
+
+   cr = connection.cursor()
+   cr.execute("INSERT INTO bank_account (owner_name, date_creation, pin, balance) VALUES(%s,%s,%s,%s)", (name,date,pin,balance))
+
+   ch = connection.cursor()
+   ch.execute("SELECT * FROM bank_account WHERE owner_name == %s", (name))
+   aas= ch.fetchall()
+   print(aas)
+   connection.commit()
+#---------------------------------------------------------------------------------------start run
 cursorr = connection.cursor()
 cursorr.execute("SELECT account_number, pin FROM bank_account")
 ids = cursorr.fetchall() 
-i=0
-while i == 0 :
-    number = int(input("What is the account number? \n"))
-    pin = int(input("what is the pin? \n"))
+irt = 0
+while irt == 0:
+    quest = input("Do you posses an account? y/n")
+    if quest == 'y':
+        number = int(input("What is the account number? \n"))
+        pin = int(input("what is the pin? \n"))
 
-    x = tuple([number, pin])
+        x = tuple([number, pin])
 
-    for acc in ids:
-        if str(x) == str(acc):
-            print("Your account is this "+str(acc))
-            vali = input("Y/n? ")
-            if vali == 'Y':
-                i += 2
-                nm = connection.cursor()
-                nm.execute("SELECT * From bank_account WHERE account_number = %s", (number,))
-                name = nm.fetchone()[0]
-                full = nm.fetchall()
-                nm.close()
-                none = connection.cursor()
-                none.execute("SELECT account_number From bank_account WHERE account_number = %s", (number,))
-                ac_number = none.fetchone()[0]
-                none.close()
-            else:
-                i == 0
+        for acc in ids:
+            if str(x) == str(acc):
+                print("Your account is this "+str(acc))
+                vali = input("Y/n? ")
+                if vali == 'Y':
+                    
+                    nm = connection.cursor()
+                    nm.execute("SELECT * From bank_account WHERE account_number = %s", (number,))
+                    namee = nm.fetchone()[0]
+                    full = nm.fetchall()
+                    nm.close()
+                    none = connection.cursor()
+                    none.execute("SELECT account_number From bank_account WHERE account_number = %s", (number,))
+                    ac_number = none.fetchone()[0]
+                    none.close()
+                    irt += 2
+                else:
+                    irt == 0
+    else:
+       create()
 
 m = 0            
-print(f"Hello {name} welcome to GR Corporated. \n First here is your account {full}")
+print(f"Hello {namee} welcome to GR Corporated. \n First here is your account {full}")
 while m == 0:
     
     next = input("So, what do you want to do next deposit, whithdraw, transfer, or show available accounts? \n \n \n")
@@ -140,6 +161,9 @@ while m == 0:
            if inp == a:
               ck = 1
        transfer(both,ac_number,inp)
+    elif next == "end":
+       print("Thank you for the time.")
+       continue
        
 cursorr.close()
 
