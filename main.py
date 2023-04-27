@@ -31,7 +31,7 @@ def withdraw(amount,number):
     number = int(number)
     cursoo.execute("SELECT balance FROM bank_account WHERE account_number = %s", (number,))   
 
-    b_balance = curso.fetchall()        
+    b_balance = cursoo.fetchall()        
 
     print("Your before balance is: "+ str(b_balance)+" .")      
   
@@ -40,7 +40,7 @@ def withdraw(amount,number):
 
     
     cursoo.execute("SELECT balance FROM bank_account WHERE account_number = %s", (number,))
-    b_balance = curso.fetchone()[0] 
+    b_balance = cursoo.fetchone()[0] 
 
     print("Your after balance is: "+str(b_balance)+" .")
     connection.commit()
@@ -81,27 +81,29 @@ def transfer(amount,tnumber,Rnumber):
 def show(own):
     sh = connection.cursor()
     if own == 13:
+        print("Hello, your admin account was detected")
         sh.execute("SELECT * FROM bank_account")
         for a in sh:
             print(a)
     else:
+        print("Hello, your account has a limited access to information only possesing their numbers")
         sh.execute("SELECT account_number FROM bank_account WHERE owner_name != %s", (own,))
         for a in sh:
             print(a[0])
 
 def create():
-   name = input("What is your name? \n")
-   pin = input("what will be your pin? \n")
-   balance = input("What is the balance for your account?\n ")
+   name = str(input("What is your name? \n"))
+   pin = int(input("what will be your pin? \n"))
+   balance = int(input("What is the balance for your account?\n "))
 
    cr = connection.cursor()
    cr.execute("INSERT INTO bank_account (owner_name, date_creation, pin, balance) VALUES(%s,%s,%s,%s)", (name,date,pin,balance))
+   
 
    ch = connection.cursor()
-   ch.execute("SELECT * FROM bank_account WHERE owner_name == %s", (name))
+   ch.execute("SELECT * FROM bank_account WHERE owner_name = %s", (name,))
    aas= ch.fetchall()
    print(aas)
-   connection.commit()
 #---------------------------------------------------------------------------------------start run
 cursorr = connection.cursor()
 cursorr.execute("SELECT account_number, pin FROM bank_account")
@@ -163,7 +165,7 @@ while m == 0:
        transfer(both,ac_number,inp)
     elif next == "end":
        print("Thank you for the time.")
-       continue
+       m += 1
        
 cursorr.close()
 
