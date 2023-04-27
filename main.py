@@ -77,11 +77,15 @@ def transfer(amount,tnumber,Rnumber):
 
 
 def show(own):
-   sh = connection.cursor()
-   sh.execute("Select * FROM bank_account WHERE owner_name != %s", (own,))
-   print(account)
-   for a in sh:
-      print(" "+a+"\n")
+    sh = connection.cursor()
+    if own == 13:
+        sh.execute("SELECT * FROM bank_account")
+        for a in sh:
+            print(a)
+    else:
+        sh.execute("SELECT account_number FROM bank_account WHERE owner_name != %s", (own,))
+        for a in sh:
+            print(a[0])
 
 cursorr = connection.cursor()
 cursorr.execute("SELECT account_number, pin FROM bank_account")
@@ -101,22 +105,20 @@ while i == 0 :
                 i += 2
                 nm = connection.cursor()
                 nm.execute("SELECT * From bank_account WHERE account_number = %s", (number,))
-
+                name = nm.fetchone()[0]
+                full = nm.fetchall()
+                nm.close()
                 none = connection.cursor()
                 none.execute("SELECT account_number From bank_account WHERE account_number = %s", (number,))
-
-                name = nm.fetchone()[0]
-                account = nm.fetchall()
-                ac_number = none.fetchall()
-
+                ac_number = none.fetchone()[0]
                 none.close()
-                nm.close()
             else:
                 i == 0
 
 m = 0            
+print(f"Hello {name} welcome to GR Corporated. \n First here is your account {full}")
 while m == 0:
-    print(f"Hello {name} welcome to GR Corporated. \n First here is your account {account}")
+    
     next = input("So, what do you want to do next deposit, whithdraw, transfer, or show available accounts? \n \n \n")
 
     if revis(scenario_deposit,next):
@@ -126,7 +128,7 @@ while m == 0:
        dd = input("\nHow much you want to take out? ")
        withdraw(dd,ac_number)
     elif revis(scenario_show,next):
-       show(name)
+       show(ac_number)
     elif revis(scenario_transfer,next):
        both = int(input("What will be the amount to transfer? \n"))
        ck = 0
