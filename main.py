@@ -5,6 +5,7 @@ import datetime
 
 date = datetime.datetime.now()
 
+# bank administrator options and close accounts unit test maybe UI
 
 connection = mysql.connector.connect(
     user = "root", 
@@ -15,7 +16,10 @@ scenario_deposit =["deposit"]
 scenario_withdraw =["withdraw"]
 scenario_transfer =["transfer"]
 scenario_show =["show", "present"]
-
+scenario_extra = ['extra']
+scenario_close = ['close']
+scenario_modify = ['modify', 'change']
+scenario_create = ['create']
 
 
 def revis(sc,answer):
@@ -76,7 +80,34 @@ def transfer(amount,tnumber,Rnumber):
    print("\nStart the deposit on "+str(Rnumber)+"\n")
    deposit(amount,Rnumber )
   
+def modify(acc):
+    k = str(input("What do you want to modify name or pin"))
+    so = connection.cursor()
+    if 'name' in k:
+        mm = input("What will be the new name? \n")
+        so.execute("UPDATE bank_account SET owner_name = %s  WHERE account_number = %s", (mm,acc))
+        so.execute("SELECT owner_name FROM bank_account WHERE account_number = %s", (acc,))
+        e = so.fetchone()[0]
+        print(f"This is the new name {e}")
+    else: 
+        mm = int(input("What will be the new pin? \n"))
+        so.execute("UPDATE bank_account SET pin = %s  WHERE account_number = %s", (mm,number))
+        so.execute("SELECT pin FROM bank_account WHERE account_number = %s", (acc,))
+        e = so.fetchone()[0]
+        print(f"This is the new pin {e}")
 
+
+
+def close(own): 
+    v = input("Are you sure to delete " + str(own)+ "y/n")
+    if v == 'y':
+        n = input("Completely sure it will be deleted forever?")
+        if n == 'y':
+            v = connection.cursor()
+            v.execute("DELETE FROM bank_account WHERE account_number = %s", (own,))
+            print("Deleted")
+    else:
+        print("\n Your desicion")
 
 def show(own):
     sh = connection.cursor()
@@ -142,7 +173,7 @@ m = 0
 print(f"Hello {namee} welcome to GR Corporated. \n First here is your account {full}")
 while m == 0:
     
-    next = input("So, what do you want to do next deposit, whithdraw, transfer, or show available accounts? \n \n \n")
+    next = input("So, what do you want to do next deposit, whithdraw, transfer, show available accounts or extra account options? (write end to stop)\n \n \n")
 
     if revis(scenario_deposit,next):
        ff = input("\nHow much you want to deposit? ")
@@ -166,6 +197,32 @@ while m == 0:
     elif next == "end":
        print("Thank you for the time.")
        m += 1
+    elif revis(scenario_extra, next):
+       print("All of the options in here depend on your account.")
+       if ac_number == 13:
+            ex = input("Hello you want to close an account , modify one, or create one")
+            if revis(scenario_modify,ex):
+                ll = input("What will be the account number? ")
+                modify(ll)
+            elif revis(scenario_close,ex):
+                ll = input("What will be the account number? ")
+                close(ll)
+            elif revis(scenario_create,ex):
+                create()
+            elif next == "end":
+                print("Thank you for the time.")
+                m += 1
+       else:
+            yx = input("Hello you can close your account or modify it")
+            if revis(scenario_modify,ex):
+                modify(ac_number)
+            elif revis(scenario_close,ex):
+                close(ac_number)
+            elif next == "end":
+                print("Thank you for the time.")
+                m += 1    
+
+       
        
 cursorr.close()
 
