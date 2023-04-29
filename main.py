@@ -178,37 +178,54 @@ while m == 0:
     if revis(scenario_deposit,next):
        ff = input("\nHow much you want to deposit? ")
        deposit(ff,ac_number)
+
     elif revis(scenario_withdraw,next):
        dd = input("\nHow much you want to take out? ")
        withdraw(dd,ac_number)
+
     elif revis(scenario_show,next):
        show(ac_number)
+
     elif revis(scenario_transfer,next):
        both = int(input("What will be the amount to transfer? \n"))
        ck = 0
+
        while ck == 0:
-        inp = input("Who will recieve the money? ")
+        inp = input("Who will receive the money? (put the account number) ")
         idd = connection.cursor()
-        idd.execute("SELECT acccount_number FROM bank_account")
-        for a in idd:
-           if inp == a:
-              ck = 1
-       transfer(both,ac_number,inp)
+        idd.execute("SELECT account_number FROM bank_account")
+        ccc = idd.fetchall()
+
+        ck = 0
+        for a in ccc:
+            if inp in str(a[0]):
+                ck = 1
+                break
+
+        if ck == 1:
+            transfer(both, ac_number, inp)
+        else:
+            print("Invalid account number. Please try again.")
     elif next == "end":
        print("Thank you for the time.")
        m += 1
+
     elif revis(scenario_extra, next):
        print("All of the options in here depend on your account.")
+
        if ac_number == 13:
             ex = input("Hello you want to close an account , modify one, or create one")
             if revis(scenario_modify,ex):
                 ll = input("What will be the account number? ")
                 modify(ll)
+
             elif revis(scenario_close,ex):
                 ll = input("What will be the account number? ")
                 close(ll)
+
             elif revis(scenario_create,ex):
                 create()
+
             elif next == "end":
                 print("Thank you for the time.")
                 m += 1
