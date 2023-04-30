@@ -96,6 +96,7 @@ def modify(acc):
         e = so.fetchone()[0]
         print(f"This is the new pin {e}")
 
+    connection.commit()
 
 
 def close(own): 
@@ -108,6 +109,7 @@ def close(own):
             print("Deleted")
     else:
         print("\n Your desicion")
+    connection.commit()
 
 def show(own):
     sh = connection.cursor()
@@ -135,6 +137,7 @@ def create():
    ch.execute("SELECT * FROM bank_account WHERE owner_name = %s", (name,))
    aas= ch.fetchall()
    print(aas)
+   connection.commit()
 #---------------------------------------------------------------------------------------start run
 cursorr = connection.cursor()
 cursorr.execute("SELECT account_number, pin FROM bank_account")
